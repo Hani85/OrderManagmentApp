@@ -2,15 +2,17 @@ import React from "react";
 import { Order, useGetOrdersQuery } from "../../../graphql/generated/schema";
 import { Grid, Typography } from "@mui/material";
 import OrderList from "./OrderList";
+import OmLoading from "../../../components/elements/OMLoading";
+import OmAlert from "../../../components/elements/OMAlert";
 
 export default function OrdersDashboard() {
     const { data: ordersData, loading, error } = useGetOrdersQuery();
     if(loading) {
-        return <div>Loading...</div>
+        return <OmLoading />
     }
 
     if(error || !ordersData){
-        return <div>Error...</div>
+        return <OmAlert message="Could not load Orders data"/>
     }
 
     const orders = ordersData.orders as Order[]
