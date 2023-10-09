@@ -1,8 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Address, Customer } from "../../../graphql/generated/schema";
-import {AgGridReact} from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import OmGrid from "../../../components/elements/OMGrid";
 interface CustomerListProps {
     customers: Customer[];
 }
@@ -30,19 +28,8 @@ export default function CustomerList({customers} : CustomerListProps){
         }
     ]);
 
-    const defaultColDef = useMemo(() => ({
-        sortable: true,
-        filter: true,
-        resizable: true
-    }), []);
 
     return (
-        <div className="ag-theme-alpine" style={{ height: 500, width: '100%'}}>
-            <AgGridReact
-                rowData={customers}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-            />
-        </div>
+        <OmGrid coloumnsDefs={columnDefs} rowData={customers} />
     )
 }
