@@ -11,6 +11,7 @@ import OmSubmitButton from "../../../components/FormsUI/OmSubmitButton";
 import { Grid, Typography } from "@mui/material";
 import OmDatePicker from "../../../components/FormsUI/OmDatePicker";
 import OmCheckBox from "../../../components/FormsUI/OmCheckBox";
+import status from '../../../data/status.json';
 
 
 interface OrderFormProps {
@@ -30,6 +31,8 @@ const FORM_VALIDATION = yup.object().shape({
     othetNotes: yup.string(),
     totalAmount : yup.number()
         .required('TotaltAmount is required'),
+    isDelivery : yup.boolean(),
+    status: yup.string()
 });
 export default function OrderForm({order} : OrderFormProps){
     const [open, setOpen] = useState(false);
@@ -65,7 +68,7 @@ export default function OrderForm({order} : OrderFormProps){
                             <OmSelect
                                 name="status"
                                 otherProps={{label: "Order Status"}}
-                                options={Status}
+                                options={status}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -83,7 +86,11 @@ export default function OrderForm({order} : OrderFormProps){
                         <Grid item xs={12}>
                             <OMTextField
                                 name="otherNotes"
-                                otherProps={{label: "Other Notes"}}
+                                otherProps={{
+                                    label: "Other Notes",
+                                    multiline: true,
+                                    rows: 4
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -91,19 +98,19 @@ export default function OrderForm({order} : OrderFormProps){
                         </Grid>
                         <Grid item xs={12}>
                             <OMTextField
-                                name="totalAmount"
+                                name="totlalAmount"
                                 otherProps={{label: "Total Amount"}}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <OMTextField
-                                name="dipositAmount"
+                                name="depositAmount"
                                 otherProps={{label: "Deposit Amount"}}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <OmCheckBox
-                                name="delivery"
+                                name="isDelivery"
                                 legend="Include Delivery"
                                 label="Include Delivery"
                                 otherProps={{label: "Delivery Included"}}
