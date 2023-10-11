@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Customer, Order, useGetOrderByIdQuery } from "../../graphql/generated/schema";
+import { Customer, Order, useGetOrderByIdQuery, useDeleteOrderMutation } from "../../graphql/generated/schema";
 import OmLoading from "../../components/elements/OMLoading";
 import OmAlert from "../../components/elements/OMAlert";
 import OrderForm from "./orderForm/OrderForm";
 import {Container} from '@mui/system';
-import { Grid } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from "@mui/material";
 import OmHeader from "../../components/elements/OMHeader";
+import Delete from "@mui/icons-material/Delete";
 
 export default function Orderpage(){
     const params = useParams();
@@ -20,11 +21,37 @@ export default function Orderpage(){
         }
     });
 
-    if (orderLoading) {
+
+    const [deleteOrder, {loading: deleteOrderLoading, error: deleteOrderError}] = useDeleteOrderMutation();
+
+    async function deleteOrderDetails(){
+        const response = await deleteOrder({
+            variables: {
+                id: orderId
+            }
+        });
+        if(!response.errors){
+            navigate('/orders');
+        }
+    }
+
+    function handleClickOpen(){
+        setOpen(true);
+    }
+
+    function handleClose(){
+        setOpen(false);
+    }
+
+    if (orderLoading || deleteOrderLoading) {
         return <OmLoading />
     }
     if(orderError || !orderData || !orderData.orders){
         return <OmAlert message="Error retrieving customer data" />
+    }
+
+    if(deleteOrderError ){
+        return <OmAlert message="Error deleting order data" />
     }
 
     const order = orderData.orders[0] as Order;
@@ -32,12 +59,47 @@ export default function Orderpage(){
 
     return (
         <Container>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle
+                    id ='alert-dialog-title'
+                >{"Delete Order Details?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id='alert-dialog-description'>
+                        You are about to remove this order and all related orders. Confirm to continue or cancel
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleClose}
+                    >Cancel</Button>
+                    <Button
+                        onClick={deleteOrderDetails}
+                        color="error"
+                        autoFocus
+                    >Delete</Button>
+                </DialogActions>
+            </Dialog>
         <Grid container spacing={2}>
             <Grid item xs={2}></Grid>
             <Grid item xs={8}>
                 <OmHeader header= {`Order Details - ${customer.firstName} ${customer.lastName}`} />
             </Grid>
-            <Grid item xs={2}></Grid>
+            <Grid item xs={2}>
+            <Button
+                variant="outlined"
+                color="error"
+                startIcon={<Delete />}
+                onClick={handleClickOpen}
+            >
+                Delete
+            </Button>
+            </Grid>
             <Grid item xs={12}>
                 <OrderForm order={order} />
             </Grid>
