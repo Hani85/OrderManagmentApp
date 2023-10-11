@@ -1,0 +1,16 @@
+mutation addOrUpdateCustomer($customer: CustomerModelInput!){
+    addOrUpdateCustomer (customer: $customer) {
+        id
+        firstName
+        lastName
+        email
+        contactNumber
+        address {
+            adressLine1
+            adressLine2
+            city
+            state
+            country
+        }
+    }
+}
