@@ -210,6 +210,7 @@ export type Query = {
   __typename?: 'Query';
   customers?: Maybe<Array<Maybe<Customer>>>;
   orders?: Maybe<Array<Maybe<Order>>>;
+  stats?: Maybe<Stats>;
 };
 
 
@@ -220,6 +221,16 @@ export type QueryCustomersArgs = {
 
 export type QueryOrdersArgs = {
   where?: InputMaybe<OrderFilterInput>;
+};
+
+export type Stats = {
+  __typename?: 'Stats';
+  completedOrders: Scalars['Int'];
+  draftOrders: Scalars['Int'];
+  pendingOrders: Scalars['Int'];
+  shippedOrders: Scalars['Int'];
+  totalCustomers: Scalars['Int'];
+  totoalOrders: Scalars['Int'];
 };
 
 export enum Status {
@@ -290,6 +301,11 @@ export type GetCustomersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCustomersQuery = { __typename?: 'Query', customers?: Array<{ __typename?: 'Customer', id: number, firstName?: string | null, lastName?: string | null, contactNumber?: string | null, email?: string | null, address?: { __typename?: 'Address', adressLine1?: string | null, adressLine2?: string | null, city?: string | null, state?: string | null, country?: string | null } | null, orders?: Array<{ __typename?: 'Order', id: number, orderDate: any, description?: string | null, totalmount: any, depositAmount: any, isDelivery: boolean, status: Status, otherNotes?: string | null } | null> | null } | null> | null };
+
+export type GetStatsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetStatsQuery = { __typename?: 'Query', stats?: { __typename?: 'Stats', totalCustomers: number, totoalOrders: number, pendingOrders: number, shippedOrders: number, completedOrders: number, draftOrders: number } | null };
 
 export type GetOrderByIdQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -573,6 +589,45 @@ export function useGetCustomersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetCustomersQueryHookResult = ReturnType<typeof useGetCustomersQuery>;
 export type GetCustomersLazyQueryHookResult = ReturnType<typeof useGetCustomersLazyQuery>;
 export type GetCustomersQueryResult = Apollo.QueryResult<GetCustomersQuery, GetCustomersQueryVariables>;
+export const GetStatsDocument = gql`
+    query GetStats {
+  stats {
+    totalCustomers
+    totoalOrders
+    pendingOrders
+    shippedOrders
+    completedOrders
+    draftOrders
+  }
+}
+    `;
+
+/**
+ * __useGetStatsQuery__
+ *
+ * To run a query within a React component, call `useGetStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStatsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetStatsQuery(baseOptions?: Apollo.QueryHookOptions<GetStatsQuery, GetStatsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStatsQuery, GetStatsQueryVariables>(GetStatsDocument, options);
+      }
+export function useGetStatsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStatsQuery, GetStatsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStatsQuery, GetStatsQueryVariables>(GetStatsDocument, options);
+        }
+export type GetStatsQueryHookResult = ReturnType<typeof useGetStatsQuery>;
+export type GetStatsLazyQueryHookResult = ReturnType<typeof useGetStatsLazyQuery>;
+export type GetStatsQueryResult = Apollo.QueryResult<GetStatsQuery, GetStatsQueryVariables>;
 export const GetOrderByIdDocument = gql`
     query GetOrderById($id: Int!) {
   orders(where: {id: {eq: $id}}) {

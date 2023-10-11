@@ -1,4 +1,5 @@
 using Core.Entities;
+using Core.Enums;
 using Core.Interfaces;
 using Core.Models;
 using Infrastructure.Data;
@@ -103,6 +104,26 @@ namespace Infrastructure.Services
             context.Orders.UpdateRange(orders);
                             
             return await context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Stats> GetCustomersAndOrdersStats()
+        {
+            var context = _contextFactory.CreateDbContext();
+            var totalCustomers = await context.Customers
+                                    .Where(c => !c.IsDeleted)
+                                    .CountAsync();
+            var orders = await context.Orders
+                                    .Where(o => !o.IsDeleted)
+                                    .ToListAsync();
+            return new Stats(){
+                TotalCustomers = totalCustomers,
+                TotoalOrders = orders.Count(),
+                PendingOrders = orders.Count(o => o.Status == Status.PENDING),
+                CompletedOrders = orders.Count(o => o.Status == Status.COMPLETED),
+                DraftOrders = orders.Count(o => o.Status == Status.DRAFT),
+                ShippedOrders = orders.Count(o => o.Status == Status.SHIPPED)
+            };
+
         }
     }
 }
